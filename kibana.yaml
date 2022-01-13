@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: log
+  name: kibana
+spec:
+  selector:
+    matchLabels:
+      run: kibana
+  template:
+    metadata:
+      labels:
+        run: kibana
+    spec:
+      containers:
+      - name: kibana
+        image: docker.elastic.co/kibana/kibana:7.16.2
+        env:
+        - name: ELASTICSEARCH_URL
+          value: "elasticsearch"
+        - name: XPACK_SECURITY_ENABLED
+          value: "true"
+        - name: ELASTICSEARCH_USERNAME
+          value: "elastic"
+        - name: ELASTICSEARCH_PASSWORD
+          value: "fWRypzyM5sddkhEn71sM"
+        ports:
+        - containerPort: 5601
+          name: http
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: log
+  name: kibana
+  labels:
+    service: kibana
+spec:
+  type: ClusterIP
+  selector:
+    run: kibana
+  ports:
+  - port: 5601
+    targetPort: 5601
